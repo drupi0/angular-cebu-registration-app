@@ -1,0 +1,6 @@
+<div class="main d-flex align-item-center justify-content-center">
+    <ng-container *ngIf="(effect.currentUser | async) as user">
+        <ngx-login-form *ngIf="!user.userId"></ngx-login-form>
+        <ngx-account-data *ngIf="user.userId" [user]="user"></ngx-account-data>
+    </ng-container>
+</div>

@@ -1,0 +1,8 @@
+<div class="mt-5 d-flex flex-column">
+    <div class="mb-3">
+        <input type="text" class="form-control" name="registration" aria-describedby="registration"
+            placeholder="Registration Code" [(ngModel)]="registrationId">
+    </div>
+    <button type="button" class="btn btn-primary mb-2" (click)="checkCode()">Check Code</button>
+    <button type="button" class="btn btn-danger" (click)="clear()">Clear</button>
+</div>
