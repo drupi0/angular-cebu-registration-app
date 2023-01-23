@@ -1,0 +1,8 @@
+export const environment = {
+    APPWRITE_URL: "http://localhost/v1",
+    APPWRITE_PROJECTID: "63ce0b5c67186021e6e1",
+    APPWRITE_DATABASEID: "63ce0b9bcaa3a8554018",
+    APPWRITE_USERSCOLLECTIONID: "63ce0e0b5505a6c98a09",
+    APPWRITE_EVENTSSCOLLECTIONID: "63ce219d78997997e9a6",
+    CERTIFICATEAPI_URL: "http://localhost:8080/v2/generate"
+}

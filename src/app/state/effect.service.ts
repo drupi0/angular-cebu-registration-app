@@ -1,12 +1,11 @@
 import {
-    BehaviorSubject, catchError, EMPTY, filter, map, Observable, of, Subject, switchMap, take, tap
+  BehaviorSubject, catchError, EMPTY, map, Observable, of, Subject, switchMap, take, tap
 } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 
 import { AdminSession, ApiService } from '../api.service';
 import { ActionTypes, AppState, EventModel, StoreService, UserModel } from './store.service';
-import { Models } from 'appwrite';
 
 @Injectable({
   providedIn: 'root'
@@ -134,7 +133,10 @@ export class EffectService {
   }
 
   printCertificate(event: EventModel) {
-
+    this.apiService.getCertificate(this._currentUser.getValue().userId, event.eventId).subscribe(file => {
+      const fileUrl = URL.createObjectURL(new Blob([file]));
+      window.open(fileUrl, "_blank");
+    });
   }
 
   getEvents(): Observable<EventModel[]> {

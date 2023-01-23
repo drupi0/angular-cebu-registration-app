@@ -1,9 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
-import { ActionTypes, EventModel, UserModel } from './state/store.service';
-import { EMPTY, first, from, map, Observable, of, switchMap, take } from 'rxjs';
-import { Client, Account, ID, Models, Databases, Query } from 'appwrite';
+import { Account, Client, Databases, Models } from 'appwrite';
+import { from, map, Observable, of, switchMap } from 'rxjs';
+import { EventModel, UserModel } from './state/store.service';
 
+import { environment } from 'src/environment';
 export interface AdminSession {
   userId: string,
   prefs: {
@@ -16,13 +17,14 @@ export interface AdminSession {
 })
 export class ApiService {
 
-  private client = new Client().setEndpoint('http://localhost/v1') // Your API Endpoint
-    .setProject('63ce0b5c67186021e6e1');               // Your project ID
-  private databaseId = "63ce0b9bcaa3a8554018";
-  private eventCollectionId = "63ce219d78997997e9a6";
-  private usersCollectionId = "63ce0e0b5505a6c98a09";
+  private client = new Client().setEndpoint(environment.APPWRITE_URL) // Your API Endpoint
+                               .setProject(environment.APPWRITE_PROJECTID);               // Your project ID
 
-  private BASE_URL = "";
+  private databaseId = environment.APPWRITE_DATABASEID;
+  private eventCollectionId = environment.APPWRITE_EVENTSSCOLLECTIONID;
+  private usersCollectionId = environment.APPWRITE_USERSCOLLECTIONID;
+  private certificateAPIURL = environment.CERTIFICATEAPI_URL;
+
 
   constructor(private httpClient: HttpClient) { }
 
@@ -56,9 +58,6 @@ export class ApiService {
     }));
   }
 
-  updateUser(user: UserModel, actionType: ActionTypes): Observable<UserModel> {
-    return this.httpClient.post(this.BASE_URL.concat("users"), { user, actionType }) as Observable<UserModel>;
-  }
 
   getEvents(): Observable<EventModel[]> {
     const databases = new Databases(this.client);
@@ -96,7 +95,7 @@ export class ApiService {
     })))
   }
 
-  getCertificate(eventId: string) {
-    return this.httpClient.post(this.BASE_URL.concat("certificate"), { eventId }) as Observable<Event>;
+  getCertificate(userId: string, eventId: string) {
+    return this.httpClient.post(this.certificateAPIURL, { userId, eventId }, { responseType: "arraybuffer"  });
   }
 }
