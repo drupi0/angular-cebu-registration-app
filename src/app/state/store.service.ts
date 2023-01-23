@@ -3,8 +3,8 @@ import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 export interface AppState {
-  eventDetails: Event[],
-  user: User[]
+  eventDetails: EventModel[],
+  user: UserModel[]
 }
 
 export enum ActionTypes {
@@ -19,14 +19,14 @@ interface Action {
   state: Partial<AppState>
 }
 
-export interface User {
+export interface UserModel {
   userId: string,
   firstName: string,
   lastName: string,
   email: string
 }
 
-export interface Event {
+export interface EventModel {
   name: string,
   eventId: string,
   members: string[]
@@ -48,7 +48,7 @@ export class StoreService {
     return this.stateSubject.asObservable();
   }
 
-  events() : Observable<Event[]> {
+  events() : Observable<EventModel[]> {
     return this._state.pipe(map((state: AppState) => {
       if(!state.eventDetails) {
         return [];
@@ -58,7 +58,7 @@ export class StoreService {
     }))
   }
 
-  users() : Observable<User[]> {
+  users() : Observable<UserModel[]> {
     return this._state.pipe(map((state: AppState) => {
       if(!state.user) {
         return [];
@@ -77,9 +77,9 @@ export class StoreService {
         break;
       case ActionTypes.UPDATE_USER:
         if (action.state.user) {
-          action.state.user.forEach((user: User) => {
+          action.state.user.forEach((user: UserModel) => {
 
-            const userIndex = this.state.user.findIndex((stateUser: User) => stateUser.userId === user.userId);
+            const userIndex = this.state.user.findIndex((stateUser: UserModel) => stateUser.userId === user.userId);
 
             if (userIndex !== -1) {
               this.state.user[userIndex] = user;
@@ -94,8 +94,8 @@ export class StoreService {
         break;
       case ActionTypes.UPDATE_EVENT_PARTICIPANTS:
         if (action.state.eventDetails) {
-          action.state.eventDetails.forEach((event: Event) => {
-            const eventIndex = this.state.eventDetails.findIndex((stateEvent: Event) => stateEvent.eventId === event.eventId);
+          action.state.eventDetails.forEach((event: EventModel) => {
+            const eventIndex = this.state.eventDetails.findIndex((stateEvent: EventModel) => stateEvent.eventId === event.eventId);
 
             if (eventIndex !== -1) {
               event.members.forEach((memberId: string) => {

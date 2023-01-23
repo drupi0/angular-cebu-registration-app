@@ -4,24 +4,41 @@
         <span class="me-4">{{ user.userId }}</span>
     </div>
 
-    <div class="btn-group mb-2 mt-3" *ngIf="(effect.getEvents() | async ) as events" dropdown>
-        <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
-            Select Event <span class="caret"></span>
-        </button>
-        <ul *dropdownMenu class="dropdown-menu  dropdown-menu-right" role="menu">
-            <li role="menuitem" *ngFor="let event of events">
-                <button class="dropdown-item" (click)="select(event.eventId)">{{ event.name }} ({{ event.members.length
-                    }})</button>
-            </li>
-        </ul>
-    </div>
-    <div class="d-flex flex-column justify-content-center">
-        <button type="button" class="btn btn-primary mb-2" (click)="join()">Join Event</button>
-        <button type="button" class="btn btn-block btn-success mb-2" (click)="printCertificate()">
-            Print Certificate
-        </button>
-        <button type="button" class="btn btn-block btn-danger" (click)="logout()">
-            Back to Search
-        </button>
-    </div>
+    <ng-container *ngIf="(effect.currentEvent | async) as currentEvent">
+        <div class="btn-group mb-2 mt-3" *ngIf="(effect.events| async ) as eventList" dropdown>
+            <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
+                <ng-container *ngIf="currentEvent.eventId; else unselected">
+                    {{ currentEvent.name }} <span
+                        class="caret"></span>
+                </ng-container>
+                <ng-template #unselected>
+                    Select Event <span class="caret"></span>
+                </ng-template>
+
+            </button>
+            <ul *dropdownMenu class="dropdown-menu  dropdown-menu-right" role="menu">
+                <li role="menuitem" *ngFor="let event of eventList">
+                    <button class="dropdown-item" (click)="select(event.eventId)">{{ event.name }}</button>
+                </li>
+            </ul>
+        </div>
+        <div class="d-flex flex-column justify-content-center">
+            <ng-container *ngIf="currentEvent.eventId">
+                <ng-container *ngIf="(effect.session | async) as currentSession">
+                    <button type="button" class="btn btn-primary mb-2" (click)="join(currentEvent)"
+                        [disabled]="hasJoined(currentEvent)" *ngIf="currentSession.prefs && currentSession.prefs.isAdmin && currentSession.prefs.isAdmin === 'true'">Join Event</button>
+                </ng-container>
+                <button type="button" class="btn btn-block btn-success mb-2" (click)="printCertificate(currentEvent)" 
+                    [disabled]="!hasJoined(currentEvent)">
+                    Print Certificate
+                </button>
+            </ng-container>
+            <button type="button" class="btn btn-block btn-danger" (click)="logout()">
+                Back to Search
+            </button>
+        </div>
+
+    </ng-container>
+
+
 </div>

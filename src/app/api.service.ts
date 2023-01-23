@@ -1,34 +1,99 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
-import { ActionTypes, User } from './state/store.service';
-import { Observable } from 'rxjs';
+import { ActionTypes, EventModel, UserModel } from './state/store.service';
+import { EMPTY, first, from, map, Observable, of, switchMap, take } from 'rxjs';
+import { Client, Account, ID, Models, Databases, Query } from 'appwrite';
+
+export interface AdminSession {
+  userId: string,
+  prefs: {
+    isAdmin?: string
+  }
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  readonly BASE_URL = ""
+  private client = new Client().setEndpoint('http://localhost/v1') // Your API Endpoint
+    .setProject('63ce0b5c67186021e6e1');               // Your project ID
+  private databaseId = "63ce0b9bcaa3a8554018";
+  private eventCollectionId = "63ce219d78997997e9a6";
+  private usersCollectionId = "63ce0e0b5505a6c98a09";
+
+  private BASE_URL = "";
+
   constructor(private httpClient: HttpClient) { }
 
-  getUser(registrationId: String) : Observable<User> {
-    return this.httpClient.post(this.BASE_URL.concat("users"), {
-      registrationId
-    }) as Observable<User>;
+  adminLogin(email: string, password: string): Observable<AdminSession> {
+    const account = new Account(this.client);
+
+    return from(account.createEmailSession(email, password)).pipe(switchMap(((session: Models.Session) => {
+
+      return from(account.getPrefs()).pipe(switchMap((prefs: Models.Preferences) => {
+        const adminSession: AdminSession = {
+          userId: session.userId, prefs
+        }
+
+        return of(adminSession);
+      }))
+    })))
   }
 
-  updateUser(user: User, actionType: ActionTypes) : Observable<User> {
-    return this.httpClient.post(this.BASE_URL.concat("users"), { user, actionType }) as Observable<User>;
+  getUser(registrationId: string): Observable<UserModel> {
+    const databases = new Databases(this.client);
+
+    return from(databases.getDocument(this.databaseId, this.usersCollectionId, registrationId)).pipe(map((model: Models.Document) => {
+      const user: UserModel = {
+        userId: model.$id,
+        firstName: model["firstName"],
+        lastName: model["lastName"],
+        email: model["email"]
+      };
+
+      return user;
+    }));
   }
 
-  getEvents(auth: string) : Observable<Event[]> {
-    return this.httpClient.post(this.BASE_URL.concat("events"), {
-      auth
-    }) as Observable<Event[]>;
+  updateUser(user: UserModel, actionType: ActionTypes): Observable<UserModel> {
+    return this.httpClient.post(this.BASE_URL.concat("users"), { user, actionType }) as Observable<UserModel>;
   }
 
-  updateEventMembers(event: Event)  : Observable<Event> {
-    return this.httpClient.post(this.BASE_URL.concat("events"), { event }) as Observable<Event>;
+  getEvents(): Observable<EventModel[]> {
+    const databases = new Databases(this.client);
+
+    return from(databases.listDocuments(this.databaseId, this.eventCollectionId)).pipe(map((response: Models.DocumentList<Models.Document>) => {
+
+      const eventDetails: EventModel[] = response.documents.reduce((acc: EventModel[], current: Models.Document) => {
+        acc.push({
+          eventId: current.$id,
+          name: current["name"],
+          members: current["members"]
+        });
+
+        return acc
+      }, [] as EventModel[])
+
+      
+      return eventDetails;
+    }));
+  }
+
+  updateEventMembers(event: EventModel): Observable<EventModel> {
+    const databases = new Databases(this.client);
+
+    const { name, members } = event;
+
+    return from(databases.updateDocument(this.databaseId, this.eventCollectionId, event.eventId, { name, members })).pipe(map((value => {
+      const updatedModel: EventModel = {
+        name: value["name"],
+        eventId: value.$id,
+        members: value["members"]
+      }
+
+      return updatedModel;
+    })))
   }
 
   getCertificate(eventId: string) {

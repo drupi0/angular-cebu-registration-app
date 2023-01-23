@@ -4,8 +4,9 @@ import {
 
 import { Injectable } from '@angular/core';
 
-import { ApiService } from '../api.service';
-import { ActionTypes, Event, StoreService, User } from './store.service';
+import { AdminSession, ApiService } from '../api.service';
+import { ActionTypes, AppState, EventModel, StoreService, UserModel } from './store.service';
+import { Models } from 'appwrite';
 
 @Injectable({
   providedIn: 'root'
@@ -13,26 +14,69 @@ import { ActionTypes, Event, StoreService, User } from './store.service';
 export class EffectService {
 
   errorSubject: Subject<string> = new Subject();
-  currentUser: BehaviorSubject<User> = new BehaviorSubject({} as User);
+  private _currentUser: BehaviorSubject<UserModel> = new BehaviorSubject({} as UserModel);
+  private _currentEvent: BehaviorSubject<EventModel> = new BehaviorSubject({} as EventModel);
+  private _adminAuth: BehaviorSubject<AdminSession> = new BehaviorSubject({} as AdminSession);
 
+  get currentUser(): Observable<UserModel> {
+    return this._currentUser.asObservable();
+  }
+
+  get session(): Observable<AdminSession> {
+    return this._adminAuth.asObservable();
+  }
+
+  get events(): Observable<EventModel[]>{
+    return this.store._state.pipe(map((state: AppState) => state.eventDetails));
+  }
+
+  loginAdmin(email: string, password: string) {
+    this.apiService.adminLogin(email, password).pipe(catchError((err) => {
+
+      this.errorSubject.next(err);
+
+      return EMPTY;
+    })).subscribe((session: AdminSession) => {
+      console.log(typeof session.prefs.isAdmin);
+
+      if(!session.prefs.isAdmin || session.prefs.isAdmin !== "true") {
+        
+        this.errorSubject.next("Account does not have admin access.");
+
+        return;
+      }
+      
+      this._adminAuth.next(session);
+      this.clearError();
+    })
+  }
+
+  logOutAdmin() {
+    this._adminAuth.next({} as AdminSession);
+  }
+  
   clearError() {
     this.errorSubject.next("");
   }
 
   clearUser() {
-    this.currentUser.next({} as User);
+    this._currentUser.next({} as UserModel);
+  }
+
+  clearCurrentEvent() {
+    this._currentEvent.next({} as EventModel);
+  }
+
+  setUser(user: UserModel) {
+    this._currentUser.next(user)
   }
 
   registrationIdLookup(registrationId: string) {
-
-    this.store.users().pipe(take(1), tap(i => console.log(i)), switchMap((users: User[]) => {
-
+    this.store.users().pipe(take(1), switchMap((users: UserModel[]) => {
       const userIndex = users.findIndex(user => user.userId === registrationId);
 
-      console.log(userIndex);
-
       if(userIndex === -1) {
-        return this.registrationApiLookup().pipe(switchMap((user: User) => {
+        return this.registrationApiLookup(registrationId).pipe(switchMap((user: UserModel) => {
           this.store.dispatch({
             type: ActionTypes.ADD_USER,
             state: {
@@ -46,23 +90,57 @@ export class EffectService {
 
       return of(users[userIndex]);
 
-    })).subscribe((user: User) => {
-      this.currentUser.next(user);
+    })).subscribe((user: UserModel) => {
+      this._currentUser.next(user);
+      this.errorSubject.next("");
     })
   }
 
-  joinEvent() {
+  setEvent(eventId: string) {
+    this.store.events().pipe(take(1), switchMap((events: EventModel[]) => {
+      const foundEvent = events.find((event: EventModel) => event.eventId === eventId);
+
+      if(foundEvent) {
+        return of(foundEvent);
+      }
+
+      return EMPTY;
+
+    })).subscribe((event: EventModel) => {
+      this._currentEvent.next(event);
+    })
+    
+  }
+
+  get currentEvent(): Observable<EventModel> {
+    return this._currentEvent.asObservable();
+  }
+
+
+
+  
+
+  joinEvent(event: EventModel) {
+    event.members.push(this._currentUser.getValue().userId);
+
+    this.apiService.updateEventMembers(event).pipe(tap((updatedEvent: EventModel) => {
+      this.store.dispatch({
+        type: ActionTypes.UPDATE_EVENT_PARTICIPANTS,
+        state: {
+          eventDetails: [updatedEvent]
+        }
+      });
+    })).subscribe();
+  }
+
+  printCertificate(event: EventModel) {
 
   }
 
-  printCertificate() {
-
-  }
-
-  getEvents(): Observable<Event[]> {
-    return this.store.events().pipe(take(1), switchMap((stateEvents: Event[]) => {
+  getEvents(): Observable<EventModel[]> {
+    return this.store.events().pipe(take(1), switchMap((stateEvents: EventModel[]) => {
       if(!stateEvents.length) {
-        return this.getEventsFromApi().pipe(switchMap((events: Event[]) => {
+        return this.getEventsFromApi().pipe(switchMap((events: EventModel[]) => {
 
           this.store.dispatch({
             type: ActionTypes.ADD_EVENT,
@@ -78,17 +156,8 @@ export class EffectService {
     }))
   }
 
-  private getEventsFromApi(): Observable<Event[]> {
-    return of([{
-      name: "Angular Meetup",
-      eventId: "1234567",
-      members: []
-    }, 
-    {
-      name: "TEST Meetup",
-      eventId: "123456",
-      members: []
-    }]).pipe(catchError((err: { message: string }, caught) => {
+  private getEventsFromApi(): Observable<EventModel[]> {
+    return this.apiService.getEvents().pipe(catchError((err: { message: string }, caught) => {
       
       if(err) {
         this.errorSubject.next(err.message);
@@ -100,19 +169,12 @@ export class EffectService {
   }
   
 
-  private registrationApiLookup(): Observable<User> {
-    return of({
-      firstName: "Cyrus",
-      lastName: "Zandro",
-      email: "czhiyas@gmail.com",
-      userId: "123456"
-    } as User).pipe(catchError((err: { message: string }, caught) => {
-      
+  private registrationApiLookup(registrationId: string): Observable<UserModel> {
+    return this.apiService.getUser(registrationId).pipe(catchError((err: { message: string }) => {
       if(err) {
         this.errorSubject.next(err.message);
       }
-
-      return caught;
+      return EMPTY;
       
     }));
   }

@@ -1,14 +1,30 @@
 import { EffectService } from 'src/app/state/effect.service';
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'ngx-login-form',
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss']
 })
-export class LoginFormComponent {
+export class LoginFormComponent implements OnInit {
   registrationId: string = "";
+  isAdminLoginShown: boolean = false;
+  isLoggedInAsAdmin: boolean = false;
+
+  admin: {
+    email: string,
+    password: string
+  } = { email: "", password: ""}
+
+  ngOnInit(): void {
+    this.effect.session.subscribe(session => {
+      if(session.prefs && session.prefs.isAdmin === "true") {
+        this.isLoggedInAsAdmin = true;
+        this.hideAdmin();
+      }
+    });
+  }
 
   checkCode() {
     this.effect.registrationIdLookup(this.registrationId);
@@ -19,5 +35,20 @@ export class LoginFormComponent {
     this.effect.clearError();
   }
 
-  constructor(private effect: EffectService) {}
+  hideAdmin() {
+    this.admin = {email: "", password: ""};
+    this.isAdminLoginShown = false;
+  }
+
+  adminLogin() {
+    this.effect.loginAdmin(this.admin.email, this.admin.password);
+  }
+
+  adminLogOut() {
+    this.effect.logOutAdmin();
+    this.isLoggedInAsAdmin = false;
+    this.hideAdmin();
+  }
+
+  constructor(public effect: EffectService) {}
 }

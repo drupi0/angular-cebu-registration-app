@@ -8,6 +8,7 @@ import { AccountDataComponent } from './account-data/account-data.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginPageRoutingModule } from './login-page-routing.module';
 import { LoginPageComponent } from './login-page.component';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { LoginPageComponent } from './login-page.component';
     CommonModule,
     LoginPageRoutingModule,
      BsDropdownModule.forRoot(),
+     AlertModule.forRoot(),
      FormsModule
   ]
 })
