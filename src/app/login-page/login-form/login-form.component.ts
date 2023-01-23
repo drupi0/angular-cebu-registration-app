@@ -50,5 +50,10 @@ export class LoginFormComponent implements OnInit {
     this.hideAdmin();
   }
 
+  scannedData(userId: string) {
+    this.registrationId = userId;
+    this.checkCode();
+  }
+
   constructor(public effect: EffectService) {}
 }

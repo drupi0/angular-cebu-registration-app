@@ -1,6 +1,15 @@
 <div class="main d-flex align-item-center justify-content-center">
-    <ng-container *ngIf="(effect.currentUser | async) as user">
-        <ngx-login-form *ngIf="!user.userId"></ngx-login-form>
-        <ngx-account-data *ngIf="user.userId" [user]="user"></ngx-account-data>
-    </ng-container>
+    <div style="min-width: 350px;">
+        <div class="border-bottom pt-4 pb-3 mb-2 text-center">
+            <strong class="text-danger">Angular Cebu Registration App v1.0</strong>
+        </div>
+        <ng-container *ngIf="(effect.currentUser | async) as user">
+            <ngx-login-form *ngIf="!user.userId"></ngx-login-form>
+            <ngx-account-data *ngIf="user.userId" [user]="user"></ngx-account-data>
+        </ng-container>
+        <div class="border-top pt-3 mt-2 text-center">
+            Proudly made with <strong class="text-danger">Angular Framework</strong>
+        </div>
+    </div>
+   
 </div>

@@ -9,19 +9,23 @@ import { LoginFormComponent } from './login-form/login-form.component';
 import { LoginPageRoutingModule } from './login-page-routing.module';
 import { LoginPageComponent } from './login-page.component';
 import { AlertModule } from 'ngx-bootstrap/alert';
+import { NgxScannerQrcodeModule } from 'ngx-scanner-qrcode';
+import { QrScannerComponent } from './qr-scanner/qr-scanner.component';
 
 @NgModule({
   declarations: [
     LoginFormComponent,
     LoginPageComponent,
-    AccountDataComponent
+    AccountDataComponent,
+    QrScannerComponent
   ],
   imports: [
     CommonModule,
     LoginPageRoutingModule,
      BsDropdownModule.forRoot(),
      AlertModule.forRoot(),
-     FormsModule
+     FormsModule,
+     NgxScannerQrcodeModule
   ]
 })
 export class LoginPageModule { }

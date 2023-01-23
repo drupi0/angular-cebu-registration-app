@@ -1,4 +1,5 @@
 <div class="mt-5 d-flex flex-column">
+    <ngx-qr-scanner (scannedData)="scannedData($event)"></ngx-qr-scanner>
     <ng-container *ngIf="isAdminLoginShown; else adminLoginButton">
         <div class="mb-3">
             <input type="text" class="form-control mb-2" name="registration" aria-describedby="registration"
