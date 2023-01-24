@@ -13,6 +13,7 @@ import { ActionTypes, AppState, EventModel, StoreService, UserModel } from './st
 export class EffectService {
 
   errorSubject: Subject<string> = new Subject();
+  loadingSubject: Subject<boolean> = new Subject();
   private _currentUser: BehaviorSubject<UserModel> = new BehaviorSubject({} as UserModel);
   private _currentEvent: BehaviorSubject<EventModel> = new BehaviorSubject({} as EventModel);
   private _adminAuth: BehaviorSubject<AdminSession> = new BehaviorSubject({} as AdminSession);
@@ -70,7 +71,21 @@ export class EffectService {
     this._currentUser.next(user)
   }
 
+  private showLoad(isShown: boolean = true) {
+    if(isShown) {
+      this.loadingSubject.next(true);
+      this.errorSubject.next("");
+
+      return;
+    }
+
+    this.loadingSubject.next(false);
+    
+  }
+
   registrationIdLookup(registrationId: string) {
+    this.showLoad();
+    
     this.store.users().pipe(take(1), switchMap((users: UserModel[]) => {
       const userIndex = users.findIndex(user => user.userId === registrationId);
 
@@ -92,6 +107,7 @@ export class EffectService {
     })).subscribe((user: UserModel) => {
       this._currentUser.next(user);
       this.errorSubject.next("");
+      this.showLoad(false);
     })
   }
 
@@ -116,9 +132,6 @@ export class EffectService {
   }
 
 
-
-  
-
   joinEvent(event: EventModel) {
     event.members.push(this._currentUser.getValue().userId);
 
@@ -134,7 +147,7 @@ export class EffectService {
 
   printCertificate(event: EventModel) {
     this.apiService.getCertificate(this._currentUser.getValue().userId, event.eventId).subscribe(file => {
-      const fileUrl = URL.createObjectURL(new Blob([file]));
+      const fileUrl = URL.createObjectURL(new Blob([file], { type: 'application/pdf' }));
       window.open(fileUrl, "_blank");
     });
   }
@@ -175,6 +188,7 @@ export class EffectService {
     return this.apiService.getUser(registrationId).pipe(catchError((err: { message: string }) => {
       if(err) {
         this.errorSubject.next(err.message);
+        this.loadingSubject.next(false);
       }
       return EMPTY;
       

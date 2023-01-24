@@ -1,8 +1,12 @@
 <div class="d-flex flex-column mb-2">
-    <div class="camera">
-        <ngx-scanner-qrcode #action="scanner"></ngx-scanner-qrcode>
+    <div class="camera-div d-flex flex-column align-items-end justify-content-center">
+        <ngx-scanner-qrcode #action="scanner" [config]="scannerConfig"></ngx-scanner-qrcode>
     </div>
     <span *ngIf="action.isLoading" class="text-center my-3">⌛ Loading...</span>
-    <button class="btn btn-info"
-    (click)="action.isStart ? action.stop() : action.start()">{{action.isStart ? 'Turn Off Scanner' : 'Turn On Scanner'}}</button>
+
+    <button class="btn btn-info mt-3" *ngIf="action.isStart"
+    (click)="switchCamera()">Switch Camera</button>
+    
+    <button class="btn btn-info mt-1"
+    (click)="turnOnOff()">{{action.isStart ? 'Turn Off Scanner' : 'Turn On Scanner'}}</button>
 </div>

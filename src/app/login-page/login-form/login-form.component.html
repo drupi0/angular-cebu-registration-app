@@ -1,5 +1,9 @@
 <div class="mt-5 d-flex flex-column">
-    <ngx-qr-scanner (scannedData)="scannedData($event)"></ngx-qr-scanner>
+    <alert type="info" class="text-center" *ngIf="isLoggedInAsAdmin">
+        <span>Logged in as <strong>Admin</strong></span>
+        <button type="button" class="btn btn-primary ms-2" (click)="adminLogOut()">Log Out</button>
+      </alert>
+      <ngx-qr-scanner (scannedData)="scannedData($event)"></ngx-qr-scanner>
     <ng-container *ngIf="isAdminLoginShown; else adminLoginButton">
         <div class="mb-3">
             <input type="text" class="form-control mb-2" name="registration" aria-describedby="registration"
@@ -12,10 +16,6 @@
     </ng-container>
 
     <ng-template #adminLoginButton>
-        <alert type="info" class="text-center d-flex align-item-center justify-content-center" *ngIf="isLoggedInAsAdmin">
-            <span>Logged in as <strong>Admin</strong></span>
-            <button type="button" class="btn btn-primary ms-2" (click)="adminLogOut()">Log Out</button>
-          </alert>
         <div class="mb-3">
             <input type="text" class="form-control" name="registration" aria-describedby="registration"
                 placeholder="Registration Code" [(ngModel)]="registrationId">

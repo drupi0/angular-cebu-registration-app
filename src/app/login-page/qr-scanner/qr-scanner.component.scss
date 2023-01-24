@@ -1,4 +1,14 @@
 .camera {
     max-width: 350px;
-    max-height: 300px;
+    min-height: 300px;
+    overflow: hidden;
+}
+
+.camera-div {
+    background-color: #262626;
+    width: 350px;
+    height: 350px;
+    max-width: 350px;
+    max-height: 350px;
+    overflow: hidden;
 }
