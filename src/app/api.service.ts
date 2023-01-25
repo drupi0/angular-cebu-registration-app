@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Account, Client, Databases, Models } from 'appwrite';
+import { Account, Client, Databases, ID, Models } from 'appwrite';
 import { from, map, Observable, of, switchMap } from 'rxjs';
 import { EventModel, UserModel } from './state/store.service';
 
@@ -47,6 +47,23 @@ export class ApiService {
     const databases = new Databases(this.client);
 
     return from(databases.getDocument(this.databaseId, this.usersCollectionId, registrationId)).pipe(map((model: Models.Document) => {
+      const user: UserModel = {
+        userId: model.$id,
+        firstName: model["firstName"],
+        lastName: model["lastName"],
+        email: model["email"]
+      };
+
+      return user;
+    }));
+  }
+
+  createUser(user: UserModel): Observable<UserModel> {
+    const databases = new Databases(this.client);
+    const object : Partial<UserModel> = user;
+    delete object.userId
+    
+    return from(databases.createDocument(this.databaseId, this.usersCollectionId, ID.unique(), object)).pipe(map((model: Models.Document) => {
       const user: UserModel = {
         userId: model.$id,
         firstName: model["firstName"],

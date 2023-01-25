@@ -1,6 +1,7 @@
 import { EffectService } from 'src/app/state/effect.service';
 
 import { Component, OnInit } from '@angular/core';
+import { UserModel } from 'src/app/state/store.service';
 
 @Component({
   selector: 'ngx-login-form',
@@ -11,15 +12,21 @@ export class LoginFormComponent implements OnInit {
   registrationId: string = "";
   isAdminLoginShown: boolean = false;
   isLoggedInAsAdmin: boolean = false;
+  isUserFormHidden: boolean = true;
+  newUser: Partial<UserModel> = {
+    firstName: "",
+    lastName: "",
+    email: ""
+  };
 
   admin: {
     email: string,
     password: string
-  } = { email: "", password: ""}
+  } = { email: "", password: "" }
 
   ngOnInit(): void {
     this.effect.session.subscribe(session => {
-      if(session.prefs && session.prefs.isAdmin === "true") {
+      if (session.prefs && session.prefs.isAdmin === "true") {
         this.isLoggedInAsAdmin = true;
         this.hideAdmin();
       }
@@ -36,7 +43,7 @@ export class LoginFormComponent implements OnInit {
   }
 
   hideAdmin() {
-    this.admin = {email: "", password: ""};
+    this.admin = { email: "", password: "" };
     this.isAdminLoginShown = false;
   }
 
@@ -55,5 +62,23 @@ export class LoginFormComponent implements OnInit {
     this.checkCode();
   }
 
-  constructor(public effect: EffectService) {}
+  openUserForm(isHidden: boolean = false) {
+    this.isUserFormHidden = isHidden;
+
+    if (!isHidden) {
+      this.newUser = {
+        firstName: "",
+        lastName: "",
+        email: ""
+      }
+    }
+  }
+
+  createUser() {
+    this.effect.createUser(this.newUser).subscribe(response => {
+      this.isUserFormHidden = response;
+    });
+  }
+
+  constructor(public effect: EffectService) { }
 }

@@ -2,28 +2,45 @@
     <alert type="info" class="text-center" *ngIf="isLoggedInAsAdmin">
         <span>Logged in as <strong>Admin</strong></span>
         <button type="button" class="btn btn-primary ms-2" (click)="adminLogOut()">Log Out</button>
-      </alert>
-      <ngx-qr-scanner (scannedData)="scannedData($event)"></ngx-qr-scanner>
-    <ng-container *ngIf="isAdminLoginShown; else adminLoginButton">
-        <div class="mb-3">
-            <input type="text" class="form-control mb-2" name="registration" aria-describedby="registration"
-                placeholder="E-mail" [(ngModel)]="admin.email">
-            <input type="password" class="form-control" name="registration" aria-describedby="registration"
-                placeholder="Password" [(ngModel)]="admin.password">
-        </div>
-        <button type="button" class="btn btn-primary mb-2" (click)="adminLogin()">Login</button>
-        <button type="button" class="btn btn-danger mb-2" (click)="hideAdmin()">Hide</button>
+    </alert>
+    <ng-container *ngIf="isUserFormHidden; else userForm">
+        <ngx-qr-scanner (scannedData)="scannedData($event)"></ngx-qr-scanner>
+        <ng-container *ngIf="isAdminLoginShown; else adminLoginButton">
+            <div class="mb-3">
+                <input type="text" class="form-control mb-2" name="admin-email" aria-describedby="admin-email"
+                    placeholder="E-mail" [(ngModel)]="admin.email" (keyup.enter)="adminLogin()">
+                <input type="password" class="form-control" name="admin-password" aria-describedby="admin-password"
+                    placeholder="Password" [(ngModel)]="admin.password" (keyup.enter)="adminLogin()">
+            </div>
+            <button type="button" class="btn btn-primary mb-2" (click)="adminLogin()">Login</button>
+            <button type="button" class="btn btn-danger mb-2" (click)="hideAdmin()">Hide</button>
+        </ng-container>
+
+        <ng-template #adminLoginButton>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="registration" aria-describedby="registration"
+                    placeholder="Registration Code" [(ngModel)]="registrationId" (keyup.enter)="checkCode()">
+            </div>
+
+            <button type="button" class="btn btn-primary mb-2" (click)="checkCode()">Check Code</button>
+            <button type="button" class="btn btn-danger mb-2" (click)="clear()">Clear</button>
+            <button type="button" class="btn btn-success mb-2" (click)="isAdminLoginShown = true"
+                *ngIf="!isLoggedInAsAdmin">Admin Login</button>
+            <button type="button" class="btn btn-success mb-2" (click)="openUserForm()" *ngIf="isLoggedInAsAdmin">Add New
+                User</button>
+        </ng-template>
     </ng-container>
 
-    <ng-template #adminLoginButton>
+    <ng-template #userForm>
         <div class="mb-3">
-            <input type="text" class="form-control" name="registration" aria-describedby="registration"
-                placeholder="Registration Code" [(ngModel)]="registrationId">
+            <input type="text" class="form-control mb-2" name="firstName" aria-describedby="firstName"
+                placeholder="First Name" [(ngModel)]="newUser.firstName">
+            <input type="text" class="form-control mb-2" name="lastName" aria-describedby="lastName"
+                placeholder="Last Name" [(ngModel)]="newUser.lastName">
+            <input type="text" class="form-control" name="email" aria-describedby="email"
+                placeholder="E-mail" [(ngModel)]="newUser.email">
         </div>
-        
-        <button type="button" class="btn btn-primary mb-2" (click)="checkCode()">Check Code</button>
-        <button type="button" class="btn btn-danger mb-2" (click)="clear()">Clear</button>
-        <button type="button" class="btn btn-success mb-2" (click)="isAdminLoginShown = true" *ngIf="!isLoggedInAsAdmin">Admin Login</button>
+        <button type="button" class="btn btn-primary mb-2" (click)="createUser()">Create User</button>
+        <button type="button" class="btn btn-danger mb-2" (click)="openUserForm(true)">Hide</button>
     </ng-template>
-    
 </div>

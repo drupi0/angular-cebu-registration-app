@@ -1,5 +1,5 @@
 import {
-  BehaviorSubject, catchError, EMPTY, map, Observable, of, Subject, switchMap, take, tap
+  BehaviorSubject, catchError, EMPTY, map, Observable, of, Subject, switchMap, take, tap, throwError
 } from 'rxjs';
 
 import { Injectable } from '@angular/core';
@@ -31,9 +31,11 @@ export class EffectService {
   }
 
   loginAdmin(email: string, password: string) {
+    this.showLoad();
     this.apiService.adminLogin(email, password).pipe(catchError((err) => {
 
       this.errorSubject.next(err);
+      this.showLoad(false);
 
       return EMPTY;
     })).subscribe((session: AdminSession) => {
@@ -47,7 +49,7 @@ export class EffectService {
       }
       
       this._adminAuth.next(session);
-      this.clearError();
+      this.showLoad(false);
     })
   }
 
@@ -125,6 +127,41 @@ export class EffectService {
       this._currentEvent.next(event);
     })
     
+  }
+
+  createUser(user: Partial<UserModel>): Observable<boolean> {
+    this.showLoad();
+    if(user.email && user.firstName && user.lastName) {
+      return this.apiService.createUser(user as UserModel).pipe(catchError((err: { message: string }) => {
+        if(err) {
+          this.errorSubject.next(err.message);
+          this.loadingSubject.next(false);
+        }
+
+        return of({} as UserModel);
+      }), switchMap((user: UserModel) => {
+        
+        if(!user) {
+          return of(false);
+        }
+
+        this.store.dispatch({
+          type: ActionTypes.ADD_USER,
+          state: {
+            user: [user]
+          }
+        });
+
+        this._currentUser.next(user);
+
+        this.showLoad(false);
+        return of(true);
+      }));
+    }
+
+    this.showLoad(false);
+    this.errorSubject.next("Incomplete user details");
+    return of(false);
   }
 
   get currentEvent(): Observable<EventModel> {
