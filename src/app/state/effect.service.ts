@@ -183,7 +183,9 @@ export class EffectService {
   }
 
   printCertificate(event: EventModel) {
+    this.showLoad();
     this.apiService.getCertificate(this._currentUser.getValue().userId, event.eventId).subscribe(file => {
+      this.showLoad(false);
       const fileUrl = URL.createObjectURL(new Blob([file], { type: 'application/pdf' }));
       window.open(fileUrl, "_blank");
     });
