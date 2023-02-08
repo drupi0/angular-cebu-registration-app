@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Account, Client, Databases, ID, Models } from 'appwrite';
-import { from, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, from, map, Observable, of, switchMap } from 'rxjs';
 import { EventModel, UserModel } from './state/store.service';
 
 import { environment } from 'src/environment';
@@ -27,6 +27,28 @@ export class ApiService {
 
 
   constructor(private httpClient: HttpClient) { }
+
+  currentSession(): Observable<AdminSession> {
+    const account = new Account(this.client);
+    
+    return from(account.getSession("current")).pipe(catchError((err) => {
+      return EMPTY;
+    }),switchMap(((session: Models.Session) => {
+
+      return from(account.getPrefs()).pipe(switchMap((prefs: Models.Preferences) => {
+        const adminSession: AdminSession = {
+          userId: session.userId, prefs
+        }
+
+        return of(adminSession);
+      }))
+    })));
+  }
+
+  adminLogout(): Observable<{}> {
+    const account = new Account(this.client);
+    return from(account.getSession("current")).pipe(switchMap((session: Models.Session) => from(account.deleteSession(session.$id))));
+  }
 
   adminLogin(email: string, password: string): Observable<AdminSession> {
     const account = new Account(this.client);

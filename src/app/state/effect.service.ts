@@ -1,11 +1,12 @@
 import {
-  BehaviorSubject, catchError, EMPTY, map, Observable, of, Subject, switchMap, take, tap, throwError
+  BehaviorSubject, catchError, EMPTY, map, Observable, of, Subject, switchMap, take, tap
 } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 
 import { AdminSession, ApiService } from '../api.service';
 import { ActionTypes, AppState, EventModel, StoreService, UserModel } from './store.service';
+import { environment } from 'src/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,15 @@ export class EffectService {
   }
 
   get session(): Observable<AdminSession> {
-    return this._adminAuth.asObservable();
+    return this._adminAuth.asObservable().pipe(switchMap((current: AdminSession) => {
+      if(!Object.keys(current).length) {
+        return this.apiService.currentSession().pipe(tap((loggedIn: AdminSession) => {
+          this._adminAuth.next(loggedIn);
+        }));
+      }
+
+      return of(current);
+    }));
   }
 
   get events(): Observable<EventModel[]>{
@@ -39,12 +48,8 @@ export class EffectService {
 
       return EMPTY;
     })).subscribe((session: AdminSession) => {
-      console.log(typeof session.prefs.isAdmin);
-
       if(!session.prefs.isAdmin || session.prefs.isAdmin !== "true") {
-        
         this.errorSubject.next("Account does not have admin access.");
-
         return;
       }
       
@@ -54,7 +59,9 @@ export class EffectService {
   }
 
   logOutAdmin() {
-    this._adminAuth.next({} as AdminSession);
+    this.apiService.adminLogout().subscribe(() => {
+      this._adminAuth.next({} as AdminSession);
+    });
   }
   
   clearError() {
@@ -93,12 +100,8 @@ export class EffectService {
 
       if(userIndex === -1) {
         return this.registrationApiLookup(registrationId).pipe(switchMap((user: UserModel) => {
-          this.store.dispatch({
-            type: ActionTypes.ADD_USER,
-            state: {
-              user: [user]
-            }
-          });
+
+          this.store.dispatch(ActionTypes.ADD_USER, { user: [user]})
 
           return of(user);
         }));
@@ -145,12 +148,7 @@ export class EffectService {
           return of(false);
         }
 
-        this.store.dispatch({
-          type: ActionTypes.ADD_USER,
-          state: {
-            user: [user]
-          }
-        });
+        this.store.dispatch(ActionTypes.ADD_USER, { user: [user] });
 
         this._currentUser.next(user);
 
@@ -173,12 +171,7 @@ export class EffectService {
     event.members.push(this._currentUser.getValue().userId);
 
     this.apiService.updateEventMembers(event).pipe(tap((updatedEvent: EventModel) => {
-      this.store.dispatch({
-        type: ActionTypes.UPDATE_EVENT_PARTICIPANTS,
-        state: {
-          eventDetails: [updatedEvent]
-        }
-      });
+      this.store.dispatch(ActionTypes.UPDATE_EVENT_PARTICIPANTS, { eventDetails: [updatedEvent] });
     })).subscribe();
   }
 
@@ -196,12 +189,7 @@ export class EffectService {
       if(!stateEvents.length) {
         return this.getEventsFromApi().pipe(switchMap((events: EventModel[]) => {
 
-          this.store.dispatch({
-            type: ActionTypes.ADD_EVENT,
-            state: {
-              eventDetails: events
-            }
-          });
+          this.store.dispatch(ActionTypes.ADD_EVENT, { eventDetails: events });
 
           return of(events);
         }));

@@ -13,12 +13,6 @@ export enum ActionTypes {
   ADD_EVENT = "[EVENT] Add Event",
   UPDATE_EVENT_PARTICIPANTS = "[EVENT] Update Event Participants"
 }
-
-interface Action {
-  type: ActionTypes,
-  state: Partial<AppState>
-}
-
 export interface UserModel {
   userId: string,
   firstName: string,
@@ -68,16 +62,16 @@ export class StoreService {
     }))
   }
 
-  dispatch(action: Action) {
-    switch (action.type) {
+  dispatch(action: ActionTypes, state: Partial<AppState>) {
+    switch (action) {
       case ActionTypes.ADD_USER:
-        if (action.state.user) {
-          this.state.user = [...this.state.user, ...action.state.user];
+        if (state.user) {
+          this.state.user = [...this.state.user, ...state.user];
         }
         break;
       case ActionTypes.UPDATE_USER:
-        if (action.state.user) {
-          action.state.user.forEach((user: UserModel) => {
+        if (state.user) {
+          state.user.forEach((user: UserModel) => {
 
             const userIndex = this.state.user.findIndex((stateUser: UserModel) => stateUser.userId === user.userId);
 
@@ -88,13 +82,13 @@ export class StoreService {
         }
         break;
       case ActionTypes.ADD_EVENT:
-        if (action.state.eventDetails) {
-          this.state.eventDetails = [...this.state.eventDetails, ...action.state.eventDetails];
+        if (state.eventDetails) {
+          this.state.eventDetails = [...this.state.eventDetails, ...state.eventDetails];
         }
         break;
       case ActionTypes.UPDATE_EVENT_PARTICIPANTS:
-        if (action.state.eventDetails) {
-          action.state.eventDetails.forEach((event: EventModel) => {
+        if (state.eventDetails) {
+          state.eventDetails.forEach((event: EventModel) => {
             const eventIndex = this.state.eventDetails.findIndex((stateEvent: EventModel) => stateEvent.eventId === event.eventId);
 
             if (eventIndex !== -1) {

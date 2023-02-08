@@ -26,6 +26,8 @@ export class LoginFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.effect.session.subscribe(session => {
+      console.log(session);
+      
       if (session.prefs && session.prefs.isAdmin === "true") {
         this.isLoggedInAsAdmin = true;
         this.hideAdmin();

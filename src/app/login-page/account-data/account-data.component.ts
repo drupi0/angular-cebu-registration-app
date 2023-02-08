@@ -18,7 +18,6 @@ export class AccountDataComponent implements OnInit {
 
   logout() {
     this.effect.clearUser();
-    // this.effect.clearCurrentEvent();
   }
 
   join(event: EventModel) {
