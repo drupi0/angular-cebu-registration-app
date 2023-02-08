@@ -5,6 +5,10 @@ import { LoginPageComponent } from './login-page/login-page.component';
 const routes: Routes = [{
   path: "",
   component: LoginPageComponent
+},
+{
+  path: "v2",
+  loadChildren: () => import("./v2/v2-app.module").then(m => m.V2AppModule)
 }];
 
 @NgModule({

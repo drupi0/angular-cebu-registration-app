@@ -1,0 +1,65 @@
+.st0 {
+    fill: #DD0031;
+}
+
+.st1 {
+    fill: #C3002F;
+}
+
+.st2 {
+    fill: #FFFFFF;
+}
+
+.main-bg {
+    background: url("/assets/main.svg") no-repeat 10% -40%;
+    background-size: 90;
+    opacity: 0.5;
+    z-index: -1;
+}
+
+.position-sticky {
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+
+        svg {
+            margin-right: 5px;
+        }
+    }
+}
+
+:host ::ng-deep {
+    .animated-title, ngx-sbz-type-delete * {
+        font-size: 60px !important;
+        font-weight: 700;
+        line-height: 60px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .main-bg {
+        background-color: #1b1b1d;
+    }
+
+    .main {
+        background-color: rgba(27, 27, 29, 0.9);
+        color: #fff;
+    }
+
+    .form-control {
+        background-color: #1b1b1d;
+        &::placeholder {
+            color: #646262;
+        }
+       
+    }
+
+    .position-sticky {
+        button, button svg {
+            background-color: #1b1b1d;
+            color: white !important;
+        }
+    }
+}

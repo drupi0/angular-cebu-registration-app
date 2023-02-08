@@ -1,0 +1,81 @@
+<div class="vw-100 vh-100 d-flex flex-column">
+    <div class="flex-fill">
+        <div class="bg-primary pt-5 pb-3 px-4">
+            <div class="h1 text-center mb-2 title">Hello, @trello</div>
+            <div class="card m-3 text-center">
+                <qrcode [qrdata]="'Your data string'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+            </div>
+        </div>
+        <div class="px-4 pt-3">
+            <div class="d-flex align-items-center justify-content-center mb-3">
+                <h2 class="flex-fill">My Events</h2>
+                <button class="btn btn-link" (click)="refreshEvent()">
+                    <img src="/assets/refresh-cw.svg" [ngClass]="{
+                        animated: isLoading
+                    }">
+                </button>
+            </div>
+            <div class="card p-2 mb-3">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        Hello World
+                    </h4>
+                    <span>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt molestiae facilis atque ex numquam, officia sit quas consectetur debitis quisquam at quasi veniam aliquid dolores! Vel accusamus qui repellat laudantium!
+                    </span>
+                    </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary">Certificate</button>
+                </div>
+            </div>
+            <div class="card p-2 mb-3">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        Hello World
+                    </h4>
+                    <span>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt molestiae facilis atque ex numquam, officia sit quas consectetur debitis quisquam at quasi veniam aliquid dolores! Vel accusamus qui repellat laudantium!
+                    </span>
+                    </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary">Certificate</button>
+                </div>
+            </div>
+            <div class="card p-2 mb-3">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        Hello World
+                    </h4>
+                    <span>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt molestiae facilis atque ex numquam, officia sit quas consectetur debitis quisquam at quasi veniam aliquid dolores! Vel accusamus qui repellat laudantium!
+                    </span>
+                    </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary">Certificate</button>
+                </div>
+            </div>
+            <div class="card p-2 mb-3">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        Hello World
+                    </h4>
+                    <span>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt molestiae facilis atque ex numquam, officia sit quas consectetur debitis quisquam at quasi veniam aliquid dolores! Vel accusamus qui repellat laudantium!
+                    </span>
+                    </div>
+                <div class="d-flex justify-content-end pb-1">
+                    <button class="btn btn-primary">Certificate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="position-sticky fixed-bottom d-flex border-top p-3 bg-primary">
+        <div>
+            <button class="btn btn-primary">Home</button>
+        </div>
+        <div class="flex-fill text-center">
+            <!-- <button class="btn btn-primary">Scan</button> -->
+        </div>
+        <button class="btn btn-primary">Chat</button>
+    </footer>
+</div>

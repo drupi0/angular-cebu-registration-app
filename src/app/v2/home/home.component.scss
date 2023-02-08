@@ -1,0 +1,12 @@
+.title {
+    color: #fff;
+}
+
+.animated {
+    animation: rotate 0.5s linear infinite; 
+    
+    @keyframes rotate{
+      to{ transform: rotate(360deg); }
+    }
+  }
+  
