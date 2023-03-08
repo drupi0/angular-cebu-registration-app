@@ -117,7 +117,7 @@ export class EffectService {
   }
 
   setEvent(eventId: string) {
-    this.store.events().pipe(take(1), switchMap((events: EventModel[]) => {
+    this.store.events().pipe(switchMap((events: EventModel[]) => {
       const foundEvent = events.find((event: EventModel) => event.eventId === eventId);
 
       if(foundEvent) {

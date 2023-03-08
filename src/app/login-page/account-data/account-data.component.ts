@@ -3,6 +3,7 @@ import { UserModel, EventModel } from 'src/app/state/store.service';
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { EMPTY, Subject } from 'rxjs';
+import { AdminSession } from 'src/app/api.service';
 
 @Component({
   selector: 'ngx-account-data',
@@ -12,8 +13,14 @@ import { EMPTY, Subject } from 'rxjs';
 export class AccountDataComponent implements OnInit {
   @Input("user") user: UserModel = {} as UserModel;
 
+  currentSession: AdminSession | undefined;
+
   ngOnInit() {
     this.effect.getEvents().subscribe();
+
+    this.effect.session.subscribe((admin: AdminSession) => {
+      this.currentSession = admin;
+    })
   }
 
   logout() {

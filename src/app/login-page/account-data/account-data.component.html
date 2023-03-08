@@ -24,10 +24,8 @@
         </div>
         <div class="d-flex flex-column justify-content-center">
             <ng-container *ngIf="currentEvent.eventId">
-                <ng-container *ngIf="(effect.session | async) as currentSession">
-                    <button type="button" class="btn btn-primary mb-2" (click)="join(currentEvent)"
-                        [disabled]="hasJoined(currentEvent)" *ngIf="currentSession.prefs && currentSession.prefs.isAdmin && currentSession.prefs.isAdmin === 'true'">Join Event</button>
-                </ng-container>
+                <button type="button" class="btn btn-primary mb-2" (click)="join(currentEvent)"
+                        [disabled]="hasJoined(currentEvent)" *ngIf="currentSession && currentSession.prefs && currentSession.prefs.isAdmin && currentSession.prefs.isAdmin === 'true'">Join Event</button>
                 <button type="button" class="btn btn-block btn-success mb-2" (click)="printCertificate(currentEvent)" 
                     [disabled]="!hasJoined(currentEvent)">
                     Print Certificate
@@ -37,8 +35,5 @@
                 Back to Search
             </button>
         </div>
-
     </ng-container>
-
-
 </div>

@@ -30,6 +30,8 @@ export class ApiService {
 
   currentSession(): Observable<AdminSession> {
     const account = new Account(this.client);
+
+    console.log("HELLO")
     
     return from(account.getSession("current")).pipe(catchError((err) => {
       return EMPTY;
