@@ -1,7 +1,14 @@
-<div class="progress" *ngIf="(effect.loadingSubject | async)">
-  <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+<div class="mobile-only text-center">
+  This site is only available on mobile devices.
 </div>
-<alert type="danger" *ngIf="(effect.errorSubject | async) as errorMessage">
-  {{ errorMessage }}
-</alert>
-<router-outlet></router-outlet>
+
+<div class="main-body">
+  <div class="progress" *ngIf="(effect.loadingSubject | async)">
+    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+  <alert type="danger" *ngIf="(effect.errorSubject | async) as errorMessage">
+    {{ errorMessage }}
+  </alert>
+  <router-outlet></router-outlet>
+</div>
+

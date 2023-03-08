@@ -11,7 +11,7 @@
 }
 
 .main-bg {
-    background: url("/assets/main.svg") no-repeat 10% -40%;
+    background: url("/assets/main.svg") no-repeat 10% -15%;
     background-size: 90;
     opacity: 0.5;
     z-index: -1;
@@ -22,7 +22,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 10px;
+        padding: 20px 10px;
+        border-color: #1b1b1d;
 
         svg {
             margin-right: 5px;
@@ -31,10 +32,14 @@
 }
 
 :host ::ng-deep {
-    .animated-title, ngx-sbz-type-delete * {
-        font-size: 60px !important;
-        font-weight: 700;
-        line-height: 60px;
+    .animated-title {
+        span {
+            font-size: 18vw !important;
+            font-weight: 700;
+            line-height: 60px;
+        }
+        
+        padding-bottom: 20vh;
     }
 }
 
@@ -59,7 +64,11 @@
     .position-sticky {
         button, button svg {
             background-color: #1b1b1d;
-            color: white !important;
+            color: #fff !important;
+        }
+
+        button {
+            border-color: #fff;
         }
     }
 }

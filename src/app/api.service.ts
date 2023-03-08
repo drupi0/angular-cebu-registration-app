@@ -123,6 +123,11 @@ export class ApiService {
 
     const { name, members } = event;
 
+    
+    if(members.join("").trim().length === 0) {
+      return EMPTY;
+    }
+
     return from(databases.updateDocument(this.databaseId, this.eventCollectionId, event.eventId, { name, members })).pipe(map((value => {
       const updatedModel: EventModel = {
         name: value["name"],

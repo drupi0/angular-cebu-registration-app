@@ -1,17 +1,19 @@
 <div class="main-bg vh-100 vw-100 position-fixed"></div>
 <div class="d-flex flex-column align-items-center main vh-100 vw-100">
     <div class="d-flex flex-column w-100 px-4 flex-fill justify-content-end">
-        <div class="mb-5">
-            <div class="animated-title">Let's do <ngx-sbz-type-delete [wordArray]="['coding ', 'sharing ', 'JavaScript ', 'Angular ']"
-                [typingSpeedMilliseconds]="100"
-                [deleteSpeedMilliseconds]="100"
-                [textColor]="'red'"></ngx-sbz-type-delete>together </div>
-        </div>
+        
     </div>
     <div class="position-sticky d-flex flex-column fixed-bottom d-flex w-100 p-3">
+        <div class="mb-5">
+            <div class="animated-title">
+                <span>Let's do</span><ngx-sbz-type-delete [wordArray]="['coding ', 'sharing ', 'JavaScript ', 'Angular ']"
+                [typingSpeedMilliseconds]="100"
+                [deleteSpeedMilliseconds]="100"
+                [textColor]="'red'"></ngx-sbz-type-delete>
+            <span>together</span></div>
+        </div>
         <button class="btn btn-light"><ng-container [ngTemplateOutlet]="svgGithub"></ng-container> Github</button>
         <button class="btn btn-light mt-2"><ng-container [ngTemplateOutlet]="svgFacebook"></ng-container> Facebook</button>
-       
     </div>
 </div>
 

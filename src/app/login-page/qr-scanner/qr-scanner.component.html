@@ -1,4 +1,4 @@
-<div class="d-flex flex-column mb-2">
+<div class="d-flex flex-column mb-4">
     <div class="camera-div d-flex flex-column align-items-end justify-content-center">
         <ngx-scanner-qrcode #action="scanner" [config]="scannerConfig"></ngx-scanner-qrcode>
     </div>
@@ -9,4 +9,8 @@
     
     <button class="btn btn-info mt-1"
     (click)="turnOnOff()">{{action.isStart ? 'Turn Off Scanner' : 'Turn On Scanner'}}</button>
+
+    <button class="btn btn-primary mt-1" (click)="file.click()">Upload QR Code</button>
+
+    <input #file type="file" (change)="onSelect(file.files)" [multiple]="'multiple'" [accept]="'.jpg, .png, .gif, .jpeg'" hidden/>
 </div>

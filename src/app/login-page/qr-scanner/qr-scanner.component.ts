@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { NgxScannerQrcodeComponent, ScannerQRCodeConfig, ScannerQRCodeDevice } from 'ngx-scanner-qrcode';
+import { NgxScannerQrcodeComponent, NgxScannerQrcodeService, ScannerQRCodeConfig, ScannerQRCodeDevice, ScannerQRCodeResult, ScannerQRCodeSelectedFiles } from 'ngx-scanner-qrcode';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -31,7 +31,7 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
   }
 
 
-  constructor() { }
+  constructor(private qrcode: NgxScannerQrcodeService) { }
 
   turnOnOff() {
     if(this.scanner?.isStart) {
@@ -66,7 +66,7 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
       })
       
 
-      this.scanner.data.pipe(takeUntil(this._destroy)).subscribe(data => {
+      this.scanner.data.pipe(takeUntil(this._destroy)).subscribe((data: ScannerQRCodeResult[]) => {
         if(data.length) {
           this.scannedData.next(data[0].value);
           this.scanner?.stop();
@@ -79,6 +79,23 @@ export class QrScannerComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this._destroy.next(true);
     this._destroy.complete();
+  }
+
+
+  onSelect(files: any): void {
+    this.qrcode.loadFilesToScan(files, this.scannerConfig).subscribe((res: ScannerQRCodeSelectedFiles[]) => {
+      if(!res.length) {
+        return;
+      }
+
+      const result = res[0];
+
+      if(!result.data?.length) {
+        return;
+      }
+
+      this.scannedData.next(result.data[0].value);
+    });
   }
 
 }
